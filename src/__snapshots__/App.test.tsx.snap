@@ -1,0 +1,11 @@
+// Vitest Snapshot v1
+
+exports[`Main App Component > rendering 1`] = `
+<div>
+  <div
+    class="App"
+  >
+    Test
+  </div>
+</div>
+`;
