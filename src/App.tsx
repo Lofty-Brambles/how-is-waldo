@@ -1,14 +1,19 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
-import styles from "./assets/styles.json";
+import { vars } from "./styles";
+import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 
 const GlobalStyle = createGlobalStyle`
 	:root {
-		--titan: ${styles.titan};
-		--flower: ${styles.flower};
-		--zeu: ${styles.zeu};
+		--titan: ${vars.titan};
+		--flower: ${vars.flower};
+		--zeu: ${vars.zeu};
+	}
+
+	body {
+		overflow-y: hidden;
 	}
 
 	// Meyer's Reset
@@ -61,10 +66,14 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const App = () => (
-	<div className="App">
-		<Navbar />
+	<div
+		className="App"
+		style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+	>
 		<GlobalStyle />
+		<Navbar />
 		<Outlet />
+		<Footer />
 	</div>
 );
 

@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
+import Leaderboard from "./components/Leaderboard";
+import List from "./components/List";
+import Starter from "./components/Starter";
 import { BodyCtx } from "./context/index";
 
 const Routing = () => {
@@ -17,12 +20,13 @@ const Routing = () => {
 						</BodyCtx.Provider>
 					}
 				>
-					{/*
-					<Route index element={} />
-					<Route path="/challenge/:uniqId" element={} />
-					<Route path="/leaderboard" element={}>
-						<Route path="/:uniqId" element={} />
+					<Route index element={<Starter />} />
+					<Route path="/leaderboard" element={<Leaderboard />}>
+						<Route index element={<List />} />
+						<Route path=":topmap" element={<List />} />
 					</Route>
+					{/*
+					<Route path="/challenge/:uniqId" element={} />
 					<Route path="*" element={} />
 				*/}
 				</Route>
