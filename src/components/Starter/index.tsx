@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { box, flex, text, vars } from "../../styles";
+import {} from "uuid";
 
 import Map1 from "../../assets/map1.jpg";
 import Map2 from "../../assets/map2.jpg";
@@ -37,6 +38,7 @@ const Boxing = styled.div`
 `;
 
 const Card = styled.div`
+	cursor: pointer;
 	${flex("column")}
 	border-radius: 2rem;
 

@@ -7,7 +7,7 @@ const vars = {
 
 	white: "#f1f3f5",
 	whiteOp35: "rgba(255, 255, 255, 0.35)",
-	grey: "#a0a0a0",
+	grey: "#606060",
 	black: "#000",
 	blackOp80: "rgba( 0, 0, 0, 0.80 )",
 	

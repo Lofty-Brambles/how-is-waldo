@@ -1,25 +1,24 @@
-import { addSeconds, formatDuration, intervalToDuration } from "date-fns";
-import { onValue, ref } from "firebase/database";
+import { child, get, ref } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import db from "../../firebase";
 import { box, flex, text, vars } from "../../styles";
 
-interface Col {
-	[time: string]: string;
+interface Entry {
+	name: string;
+	time: number;
 }
 
-type Props = {
-	time: number;
-	name: string;
-};
+interface Props {
+	item: Entry;
+}
 
 const Logbar = styled.div`
 	box-sizing: border-box;
 	width: calc(100% - 5rem);
 
-	${flex()}
+	${flex("column")}
 	padding: 1rem;
 	border-radius: 0 0 1rem 1rem;
 
@@ -30,13 +29,14 @@ const Logbar = styled.div`
 
 const Logstyle = styled.div`
 	position: relative;
+	padding-bottom: 0.7rem;
 
 	&::after {
 		content: "";
 		position: absolute;
 
 		left: 50%;
-		bottom: 2px;
+		bottom: 0.5rem;
 		${box("35%", "4px")}
 		transform: translateX(-50%);
 
@@ -49,79 +49,66 @@ const Logstyle = styled.div`
 	}
 `;
 
-const Log = ({ time, name }: Props) => {
-	const fmtTime: string = formatDuration(
-		intervalToDuration({
-			start: new Date(0),
-			end: addSeconds(new Date(0), time),
-		}),
-		{
-			format: ["hours", "minutes", "seconds"],
-			zero: true,
-		}
-	)
-		.split(/\s+.*\s*/gi)
-		.map(ele => ele.padStart(2, "0"))
-		.join(" : ");
+const Log = ({ item }: Props) => {
+	const fmtTime = (secs: number) =>
+		`${Math.floor(secs / 3600)
+			.toString()
+			.padStart(2, "0")} : ${Math.floor((secs % 3600) / 60)
+			.toString()
+			.padStart(2, "0")} : ${(secs % 60).toString().padStart(2, "0")}`;
 	return (
 		<Logstyle>
-			<span>{fmtTime}</span>&nbsp;&nbsp;|&nbsp;&nbsp;{name}
+			<span>{fmtTime(item.time)}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+			{item.name}
 		</Logstyle>
 	);
 };
 
 const List = () => {
-	const [data, setData] = useState<Col | null>(null);
+	const [data, setData] = useState<Entry[] | null>(null);
 	const { topmap } = useParams();
 
-	const init: Col = {};
-	const sorted = (snapVal: Col) =>
-		Object.keys(snapVal)
-			.sort()
-			.reduce((acc, key) => {
-				acc[+key] = snapVal[+key];
-				return acc;
-			}, init);
 	const check = (address: string | undefined) =>
-		!(
+		(
 			address === "dreamcast" ||
 			address === "gamecube" ||
 			address === "n64"
 		);
 
+	const sort = (arr: Entry[]) =>
+		arr
+			.sort((a: Entry, b: Entry) => (a.time > b.time ? 1 : -1))
+			.slice(0, 15);
+
 	useEffect(() => {
-		setData({
-			23: "23ra"
-		});
-		/* if (check(topmap)) {
-			const reference = ref(db, topmap);
-			onValue(reference, snapshot => {
-				const snapVal = snapshot.val as unknown as Col;
-				setData(sorted(snapVal));
+		if (check(topmap)) {
+			const dbRef = ref(db);
+			get(child(dbRef, topmap as string)).then(snap => {
+				if (snap.exists())
+					setData(sort(snap as unknown as Entry[]));
 			});
-		} */
+		}
 	}, []);
 
-	if (check(topmap)) {
+	if (!check(topmap)) {
 		return (
 			<Logbar>
 				Oh no, click on the map options to fetch lederboards!
 			</Logbar>
 		);
 	}
-	return data === null ? (
+	return (data === null) || (data === []) ? (
 		<Logbar>
 			No one has played a game of how-is-waldo yet ;(. Poor waldo.
 		</Logbar>
 	) : (
 		<Logbar>
-			{Object.keys(data)
-				.slice(0, 5)
-				.map((ele: string) => (
-					<Log time={+ele} name={data[+ele]} />
-				))}
+			{data.map((ele: Entry) => (
+				<Log item={ele} key={ele.name} />
+			))}
 		</Logbar>
 	);
 };
 
 export default List;
+export type { Entry };

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
+import Four04 from "./components/404";
 import Leaderboard from "./components/Leaderboard";
 import List from "./components/List";
 import Starter from "./components/Starter";
@@ -27,8 +28,8 @@ const Routing = () => {
 					</Route>
 					{/*
 					<Route path="/challenge/:uniqId" element={} />
-					<Route path="*" element={} />
-				*/}
+					*/}
+					<Route path="*" element={<Four04 />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
